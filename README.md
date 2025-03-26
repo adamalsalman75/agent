@@ -101,7 +101,7 @@ curl -X PUT http://localhost:8080/api/tasks/1/complete | jq
 
 ## AI Agent Patterns
 
-This project implements the four core patterns of AI agent architecture:
+This project implements several core patterns of AI agent architecture:
 
 ### 1. Tasks Pattern
 Tasks are discrete units of work that the agent can perform. Each task is self-contained and has a specific responsibility.
@@ -138,6 +138,30 @@ In this project:
 - Uses AI (GPT-4o) to understand intent
 - Combines sensor data and knowledge to select appropriate tasks
 - Returns structured decisions via `ActionDecision`
+
+### 5. Chain of Thought Pattern
+Chain of Thought represents the AI's internal reasoning process, breaking down complex problems into discrete steps.
+
+In this project:
+- `ChainOfThought` interface defines how to break down reasoning
+- Uses step-by-step thinking to solve complex problems
+- Records each step of the reasoning process
+- Helps explain how the AI reached its conclusions
+- Particularly useful for complex task decomposition
+
+### 6. Refinement Pattern
+Refinement represents the iterative improvement process through user feedback and validation.
+
+In this project:
+- `Refinement` interface defines the iterative improvement process
+- Involves back-and-forth interaction with users
+- Asks clarifying questions when needed
+- Improves responses based on feedback
+- Particularly useful for:
+  - Complex task understanding
+  - Ambiguity resolution
+  - Requirement clarification
+  - Input validation and enhancement
 
 ### How the Patterns Work Together
 
