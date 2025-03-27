@@ -1,19 +1,41 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TaskList } from './components/TaskList';
 import { TaskForm } from './components/TaskForm';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { Container, Typography, Box } from '@mui/material';
 
 const queryClient = new QueryClient();
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    background: {
+      default: '#f5f5f5',
+    },
+  },
+});
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-3xl mx-auto p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Task Manager</h1>
-          <TaskForm />
-          <TaskList />
-        </div>
-      </div>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box sx={{ minHeight: '100vh', py: 4 }}>
+          <Container maxWidth="md">
+            <Typography 
+              variant="h3" 
+              component="h1" 
+              sx={{ mb: 4, textAlign: 'center', color: 'primary.main' }}
+            >
+              Task Manager
+            </Typography>
+            <TaskForm />
+            <TaskList />
+          </Container>
+        </Box>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

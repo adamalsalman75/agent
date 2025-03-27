@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { taskApi } from '../api/client';
+import { Paper, TextField, Button, Box } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 
 export const TaskForm = () => {
   const [description, setDescription] = useState('');
@@ -22,30 +24,32 @@ export const TaskForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="task" className="block text-sm font-medium text-gray-700">
-          New Task
-        </label>
-        <div className="mt-1 flex rounded-md shadow-sm">
-          <input
-            type="text"
-            name="task"
-            id="task"
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
-            placeholder="Enter task description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            disabled={createMutation.isPending}
-          >
-            Add Task
-          </button>
-        </div>
-      </div>
-    </form>
+    <Paper 
+      component="form" 
+      onSubmit={handleSubmit}
+      elevation={2}
+      sx={{ p: 3, mb: 3 }}
+    >
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <TextField
+          fullWidth
+          label="New Task"
+          variant="outlined"
+          size="medium"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="What needs to be done?"
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={createMutation.isPending}
+          startIcon={<AddIcon />}
+          sx={{ px: 4 }}
+        >
+          {createMutation.isPending ? 'Adding...' : 'Add'}
+        </Button>
+      </Box>
+    </Paper>
   );
 };

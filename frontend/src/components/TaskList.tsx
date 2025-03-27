@@ -1,6 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { Task, taskApi } from '../api/client';
-import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import { 
+  Paper, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  Typography, 
+  CircularProgress,
+  Box,
+  IconButton
+} from '@mui/material';
+import { 
+  CheckCircle as CheckCircleIcon,
+  RadioButtonUnchecked as UncheckedIcon
+} from '@mui/icons-material';
 
 export const TaskList = () => {
   const { data: tasks, isLoading } = useQuery<Task[]>({
@@ -9,40 +22,51 @@ export const TaskList = () => {
   });
 
   if (isLoading) {
-    return <div className="text-center">Loading tasks...</div>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (!tasks?.length) {
-    return <div className="text-center text-gray-500">No tasks found</div>;
+    return (
+      <Paper sx={{ p: 3, textAlign: 'center' }}>
+        <Typography color="text.secondary">
+          No tasks yet. Add one to get started!
+        </Typography>
+      </Paper>
+    );
   }
 
   return (
-    <div className="mt-6">
-      <h2 className="text-lg font-medium mb-4">Your Tasks</h2>
-      <div className="space-y-2">
-        {tasks.map((task) => (
-          <div
+    <Paper elevation={2}>
+      <List sx={{ p: 0 }}>
+        {tasks.map((task, index) => (
+          <ListItem
             key={task.id}
-            className="flex items-center justify-between p-4 bg-white rounded-lg shadow"
+            divider={index < tasks.length - 1}
+            secondaryAction={
+              <Typography variant="caption" color="text.secondary">
+                {new Date(task.createdAt).toLocaleDateString()}
+              </Typography>
+            }
           >
-            <div className="flex items-center">
-              <span className="flex-shrink-0 w-5 h-5">
-                {task.completed ? (
-                  <CheckIcon className="w-5 h-5 text-green-500" aria-hidden="true" />
-                ) : (
-                  <XMarkIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
-                )}
-              </span>
-              <span className={`ml-3 ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                {task.description}
-              </span>
-            </div>
-            <div className="text-sm text-gray-500">
-              {new Date(task.createdAt).toLocaleDateString()}
-            </div>
-          </div>
+            <IconButton edge="start" sx={{ mr: 2, color: task.completed ? 'success.main' : 'action.disabled' }}>
+              {task.completed ? <CheckCircleIcon /> : <UncheckedIcon />}
+            </IconButton>
+            <ListItemText
+              primary={task.description}
+              sx={{
+                '& .MuiListItemText-primary': {
+                  textDecoration: task.completed ? 'line-through' : 'none',
+                  color: task.completed ? 'text.secondary' : 'text.primary',
+                },
+              }}
+            />
+          </ListItem>
         ))}
-      </div>
-    </div>
+      </List>
+    </Paper>
   );
 };
