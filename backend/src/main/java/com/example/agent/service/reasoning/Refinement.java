@@ -21,17 +21,23 @@ public class Refinement {
     }
 
     public ConversationContext refineTask(String query, JsonNode context) {
+        // Create a new context if null is provided
         ConversationContext currentContext = context != null ?
             reconstructContext(context) : ConversationContext.createNew();
 
         // If this is a follow-up response, include previous context
-        String prompt = buildPrompt(query, currentContext);
+        String prompt = buildPrompt(query, currentContext != null ? currentContext : ConversationContext.createNew());
         String response = completionService.getCompletion(prompt);
         
-        return processAIResponse(response, currentContext);
+        return processAIResponse(response, currentContext != null ? currentContext : ConversationContext.createNew());
     }
 
     private String buildPrompt(String query, ConversationContext context) {
+        // Ensure we always have a valid context
+        if (context == null) {
+            context = ConversationContext.createNew();
+        }
+
         if (!context.requiresFollowUp()) {
             return """
                 You are a task refinement assistant. Your goal is to help create well-defined tasks.
@@ -62,6 +68,11 @@ public class Refinement {
     }
 
     private ConversationContext processAIResponse(String content, ConversationContext context) {
+        // Ensure we always have a valid context
+        if (context == null) {
+            context = ConversationContext.createNew();
+        }
+
         // Check if the response indicates need for more information
         if (content.contains("NEEDS_MORE_INFO")) {
             return new ConversationContext(
@@ -91,9 +102,9 @@ public class Refinement {
 
     private JsonNode parseTaskData(String response) {
         try {
+            // Create a structured task data object from the AI response
             ObjectNode taskData = objectMapper.createObjectNode();
-            // Parse the structured response into task data
-            // This will be used to create or update tasks
+            taskData.put("description", response.trim());
             return taskData;
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse task data", e);
@@ -102,9 +113,13 @@ public class Refinement {
 
     private ConversationContext reconstructContext(JsonNode contextJson) {
         try {
+            if (contextJson == null) {
+                return ConversationContext.createNew();
+            }
             return objectMapper.treeToValue(contextJson, ConversationContext.class);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to reconstruct conversation context", e);
+            // If we fail to reconstruct the context, return a new one instead of throwing
+            return ConversationContext.createNew();
         }
     }
 }
