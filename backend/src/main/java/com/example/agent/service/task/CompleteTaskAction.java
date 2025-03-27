@@ -5,7 +5,6 @@ import com.example.agent.service.TaskService;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class CompleteTaskAction implements TaskAction {
@@ -18,16 +17,12 @@ public class CompleteTaskAction implements TaskAction {
     @Override
     public Map<String, Object> execute(Map<String, Object> context) {
         Long taskId = Long.parseLong((String) context.get("taskId"));
-        Optional<Task> completedTask = taskService.completeTask(taskId);
+        Task completedTask = taskService.completeTask(taskId);
         
-        if (completedTask.isPresent()) {
-            return Map.of(
-                "message", "Task completed successfully",
-                "task", completedTask.get()
-            );
-        }
-        
-        throw new RuntimeException("Task not found with id: " + taskId);
+        return Map.of(
+            "message", "Task completed successfully",
+            "task", completedTask
+        );
     }
 
     @Override

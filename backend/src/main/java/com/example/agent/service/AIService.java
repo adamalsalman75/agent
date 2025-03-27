@@ -1,20 +1,103 @@
 package com.example.agent.service;
 
-import com.example.agent.service.decision.DecisionMaker;
+import com.example.agent.model.ConversationContext;
+import com.example.agent.model.QueryRequest;
+import com.example.agent.model.QueryResponse;
+import com.example.agent.model.Task;
+import com.example.agent.repository.TaskRepository;
+import com.example.agent.service.reasoning.Refinement;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
-import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AIService {
-    private final DecisionMaker decisionMaker;
+    private final TaskRepository taskRepository;
+    private final Refinement refinement;
+    private final ObjectMapper objectMapper;
+    private final CompletionService completionService;
 
-    public AIService(DecisionMaker decisionMaker) {
-        this.decisionMaker = decisionMaker;
+    public AIService(
+            TaskRepository taskRepository,
+            Refinement refinement,
+            ObjectMapper objectMapper,
+            CompletionService completionService) {
+        this.taskRepository = taskRepository;
+        this.refinement = refinement;
+        this.objectMapper = objectMapper;
+        this.completionService = completionService;
     }
 
-    public Map<String, Object> processQuery(String query) {
-        return decisionMaker.decide(Map.of("query", query))
-                .map(decision -> decision.action().execute(decision.parameters()))
-                .orElseThrow(() -> new RuntimeException("Could not determine action for query: " + query));
+    @Transactional
+    public QueryResponse processQuery(QueryRequest request) {
+        ConversationContext context = refinement.refineTask(request.query(), request.context());
+
+        if (context.requiresFollowUp()) {
+            return QueryResponse.needsMoreInfo(
+                context.nextPrompt(),
+                objectMapper.valueToTree(context)
+            );
+        }
+
+        Task task = createTaskFromContext(context);
+        if (task != null) {
+            task = taskRepository.save(task);
+            return QueryResponse.withTask(
+                "Successfully created task: " + task.description(),
+                task
+            );
+        }
+
+        return QueryResponse.success("I couldn't create a task from that input. Could you try rephrasing?");
+    }
+
+    private Task createTaskFromContext(ConversationContext context) {
+        try {
+            JsonNode data = context.collectedData();
+            String description = data.get("description").asText();
+            Task task = Task.createNewWithDetails(
+                description,
+                data.has("deadline") ? parseDateTime(data.get("deadline").asText()) : null,
+                data.has("priority") ? data.get("priority").asText() : null,
+                data.has("constraints") ? data.get("constraints").asText() : null,
+                data.has("parentId") ? data.get("parentId").asLong() : null,
+                data.has("metadata") ? data.get("metadata") : null
+            );
+
+            // If this task has subtasks, create them recursively
+            if (data.has("subtasks") && data.get("subtasks").isArray()) {
+                task = taskRepository.save(task); // Save parent first
+                for (JsonNode subtask : data.get("subtasks")) {
+                    var subtaskContext = new ConversationContext(
+                        null, subtask, false, null, null
+                    );
+                    Task childTask = createTaskFromContext(subtaskContext);
+                    if (childTask != null) {
+                        childTask = Task.createNewWithDetails(
+                            childTask.description(),
+                            childTask.deadline(),
+                            childTask.priority(),
+                            childTask.constraints(),
+                            task.id(), // Set parent ID
+                            childTask.metadata()
+                        );
+                        taskRepository.save(childTask);
+                    }
+                }
+            }
+
+            return task;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private java.time.LocalDateTime parseDateTime(String dateStr) {
+        try {
+            return java.time.LocalDateTime.parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

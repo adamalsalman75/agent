@@ -1,68 +1,71 @@
 package com.example.agent.controller;
 
+import com.example.agent.model.QueryRequest;
+import com.example.agent.model.QueryResponse;
 import com.example.agent.model.Task;
+import com.example.agent.repository.TaskRepository;
 import com.example.agent.service.AIService;
-import com.example.agent.service.TaskService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:5173") // For development
 public class AgentController {
-
     private final AIService aiService;
-    private final TaskService taskService;
+    private final TaskRepository taskRepository;
 
-    @Autowired
-    public AgentController(AIService aiService, TaskService taskService) {
+    public AgentController(AIService aiService, TaskRepository taskRepository) {
         this.aiService = aiService;
-        this.taskService = taskService;
+        this.taskRepository = taskRepository;
     }
 
     @PostMapping("/query")
-    public ResponseEntity<?> processQuery(@RequestBody Map<String, String> request) {
-        String query = request.get("query");
-        if (query == null || query.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Query cannot be empty");
-        }
-
-        try {
-            Map<String, Object> response = aiService.processQuery(query);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<QueryResponse> processQuery(@RequestBody QueryRequest request) {
+        return ResponseEntity.ok(aiService.processQuery(request));
     }
 
     @GetMapping("/tasks")
     public ResponseEntity<List<Task>> getAllTasks() {
-        return ResponseEntity.ok(taskService.getAllTasks());
+        return ResponseEntity.ok((List<Task>) taskRepository.findAll());
     }
 
     @GetMapping("/tasks/active")
     public ResponseEntity<List<Task>> getActiveTasks() {
-        return ResponseEntity.ok(taskService.getActiveTasks());
+        return ResponseEntity.ok(taskRepository.findByCompletedFalse());
     }
 
-    @PostMapping("/tasks")
-    public ResponseEntity<Task> createTask(@RequestBody Map<String, String> request) {
-        String description = request.get("description");
-        if (description == null || description.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        
-        Task task = taskService.createTask(description);
-        return ResponseEntity.ok(task);
+    @GetMapping("/tasks/{id}/subtasks")
+    public ResponseEntity<List<Task>> getSubtasks(@PathVariable Long id) {
+        return ResponseEntity.ok(taskRepository.findSubtasks(id));
+    }
+
+    @GetMapping("/tasks/root")
+    public ResponseEntity<List<Task>> getRootTasks() {
+        return ResponseEntity.ok(taskRepository.findRootTasks());
+    }
+
+    @GetMapping("/tasks/priority/{priority}")
+    public ResponseEntity<List<Task>> getTasksByPriority(@PathVariable String priority) {
+        return ResponseEntity.ok(taskRepository.findByPriority(priority));
+    }
+
+    @GetMapping("/tasks/overdue")
+    public ResponseEntity<List<Task>> getOverdueTasks() {
+        return ResponseEntity.ok(taskRepository.findOverdueTasks());
     }
 
     @PutMapping("/tasks/{id}/complete")
     public ResponseEntity<Task> completeTask(@PathVariable Long id) {
-        Optional<Task> task = taskService.completeTask(id);
-        return task.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Task not found"));
+        return ResponseEntity.ok(taskRepository.save(task.markCompleted()));
+    }
+
+    @PostMapping("/tasks")
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        return ResponseEntity.ok(taskRepository.save(task));
     }
 }

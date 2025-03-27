@@ -17,7 +17,9 @@ public class CreateTaskAction implements TaskAction {
     @Override
     public Map<String, Object> execute(Map<String, Object> context) {
         String description = (String) context.get("description");
-        Task newTask = taskService.createTask(description);
+        Task task = Task.createNew(description);
+        Task newTask = taskService.createTask(task);
+        
         return Map.of(
             "message", "Task created successfully",
             "task", newTask
