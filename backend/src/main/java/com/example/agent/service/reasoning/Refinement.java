@@ -72,7 +72,18 @@ public class Refinement {
         if (context == null) {
             context = ConversationContext.createNew();
         }
-
+        
+        // Handle null content from the AI response
+        if (content == null) {
+            return new ConversationContext(
+                "CREATE_TASK",
+                parseTaskData("No task description available"),
+                false,
+                null,
+                context.inProgressTask()
+            );
+        }
+        
         // Check if the response indicates need for more information
         if (content.contains("NEEDS_MORE_INFO")) {
             return new ConversationContext(
