@@ -86,7 +86,9 @@ graph TD
         SensorSystem[Sensor System] -->|Environment Data| KnowledgeBase
         KnowledgeBase -->|State| ReasoningEngine
         
-        ReasoningEngine -->|Action Selection| TaskProcessor[Task Processor]
+        ReasoningEngine -->|Action Selection| Decision{Needs More Info?}
+        Decision -->|Yes| DirectResponse[Direct Response]
+        Decision -->|No| TaskProcessor[Task Processor]
     end
     
     subgraph "Task Management"
@@ -95,6 +97,7 @@ graph TD
         Repository -->|Data| Database[(PostgreSQL)]
     end
     
+    DirectResponse -->|Follow-up Query| Controller
     TaskService -->|Result| CompletionService[CompletionService]
     CompletionService -->|Response| Controller
     Controller -->|QueryResponse| Client
@@ -104,7 +107,7 @@ graph TD
 - **Controller Layer**: Handles HTTP requests and response formatting
 - **AI Processing**:
   - Decision Making: Analyzes user intent using OpenAI
-  - Reasoning Engine: Implements chain-of-thought processing
+  - Reasoning Engine: Implements chain-of-thought processing with early exit for incomplete information
   - Knowledge Base: Maintains system state and context
   - Sensor System: Gathers environmental data
 - **Task Management**:
