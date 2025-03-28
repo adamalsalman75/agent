@@ -13,8 +13,9 @@ on:
       - '.github/workflows/maven.yml'
 
 permissions:
-  contents: read
+  contents: write
   actions: read
+  pages: write
 
 jobs:
   build-and-test:
@@ -70,3 +71,12 @@ jobs:
       with:
         name: backend-spotbugs-report
         path: backend/target/site/spotbugs.html
+        
+    - name: Publish badges to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: badges
+        branch: gh-pages
+        clean: false
+        target-folder: backend
