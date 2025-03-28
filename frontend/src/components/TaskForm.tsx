@@ -34,10 +34,16 @@ interface ConversationState {
   resultTask?: Task;
 }
 
-export const TaskForm = () => {
+interface TaskFormProps {
+  activeTask?: Task;
+  onClose?: () => void;
+}
+
+export const TaskForm = ({ activeTask, onClose }: TaskFormProps) => {
   const [query, setQuery] = useState('');
   const [conversation, setConversation] = useState<ConversationState>({
-    messages: []
+    messages: [],
+    context: activeTask ? { inProgressTask: activeTask } : undefined
   });
   const queryClient = useQueryClient();
 
@@ -59,8 +65,10 @@ export const TaskForm = () => {
       }));
 
       if (!data.requiresFollowUp) {
-        // Clear input only when conversation is complete
         setQuery('');
+        if (onClose && data.resultTask) {
+          onClose();
+        }
       }
     },
   });
@@ -93,6 +101,12 @@ export const TaskForm = () => {
         elevation={2}
         sx={{ p: 3, mb: 3 }}
       >
+        {activeTask && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Updating task: {activeTask.description}
+          </Alert>
+        )}
+
         {conversation.messages.length > 0 && (
           <List sx={{ mb: 3 }}>
             {conversation.messages.map((msg, index) => (
@@ -158,6 +172,7 @@ export const TaskForm = () => {
         <Box sx={{ display: 'flex', gap: 2 }}>
           <TextField
             fullWidth
+            data-testid="task-input"
             label={conversation.requiresFollowUp 
               ? "Please provide more details" 
               : "Tell me what you need"}
@@ -171,6 +186,7 @@ export const TaskForm = () => {
           />
           <Button
             type="submit"
+            data-testid="submit-button"
             variant="contained"
             disabled={processQueryMutation.isPending}
             startIcon={processQueryMutation.isPending 

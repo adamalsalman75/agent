@@ -2,7 +2,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TaskList } from './components/TaskList';
 import { TaskForm } from './components/TaskForm';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { Container, Typography, Box } from '@mui/material';
+import { Container, Typography, Box, Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { useState } from 'react';
+import { Task } from './types';
 
 const queryClient = new QueryClient();
 
@@ -18,6 +21,19 @@ const theme = createTheme({
 });
 
 function App() {
+  const [selectedTask, setSelectedTask] = useState<Task | undefined>();
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+
+  const handleTaskSelect = (task: Task) => {
+    setSelectedTask(task);
+    setIsUpdateDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setSelectedTask(undefined);
+    setIsUpdateDialogOpen(false);
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
@@ -32,9 +48,33 @@ function App() {
               Task Manager
             </Typography>
             <TaskForm />
-            <TaskList />
+            <TaskList onTaskSelect={handleTaskSelect} />
           </Container>
         </Box>
+
+        <Dialog 
+          open={isUpdateDialogOpen} 
+          onClose={handleDialogClose}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>
+            Update Task
+            <IconButton
+              aria-label="close"
+              onClick={handleDialogClose}
+              sx={{ position: 'absolute', right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <TaskForm 
+              activeTask={selectedTask} 
+              onClose={handleDialogClose}
+            />
+          </DialogContent>
+        </Dialog>
       </ThemeProvider>
     </QueryClientProvider>
   );

@@ -21,10 +21,15 @@ import {
   ExpandLess as ExpandLessIcon,
   Schedule as ScheduleIcon,
   Flag as FlagIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  Reply as ReplyIcon
 } from '@mui/icons-material';
 
-export const TaskList = () => {
+interface TaskListProps {
+  onTaskSelect?: (task: Task) => void;
+}
+
+export const TaskList = ({ onTaskSelect }: TaskListProps) => {
   const [expandedTasks, setExpandedTasks] = useState<number[]>([]);
   
   const { data: rootTasks, isLoading: isLoadingRoot } = useQuery<Task[]>({
@@ -84,11 +89,20 @@ export const TaskList = () => {
                          task.priority === 'MEDIUM' ? "warning" : "info"}
                 />
               )}
+              <IconButton
+                size="small"
+                data-testid="reply-button"
+                onClick={() => onTaskSelect?.(task)}
+                sx={{ ml: 1 }}
+              >
+                <ReplyIcon />
+              </IconButton>
             </Box>
           }
         >
           <IconButton 
             edge="start" 
+            data-testid="complete-task-button"
             sx={{ mr: 2, color: task.completed ? 'success.main' : 'action.disabled' }}
             onClick={() => taskApi.completeTask(task.id)}
           >
@@ -96,6 +110,7 @@ export const TaskList = () => {
           </IconButton>
           
           <ListItemText
+            data-testid="task-description"
             primary={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography

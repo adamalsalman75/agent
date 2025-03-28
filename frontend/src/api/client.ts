@@ -36,6 +36,7 @@ export const taskApi = {
   getOverdueTasks: () => api.get<Task[]>('/tasks/overdue').then(res => res.data),
   createTask: (task: Partial<Task>) => api.post<Task>('/tasks', task).then(res => res.data),
   completeTask: (id: number) => api.put<Task>(`/tasks/${id}/complete`).then(res => res.data),
+  updateTask: (id: number, task: Partial<Task>) => api.put<Task>(`/tasks/${id}`, task).then(res => res.data),
   processQuery: (query: string, context?: any) =>
     api.post<AIResponse>('/query', { query, context }).then(res => res.data),
 };
