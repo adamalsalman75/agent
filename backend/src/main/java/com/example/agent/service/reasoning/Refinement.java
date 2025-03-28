@@ -2,21 +2,21 @@ package com.example.agent.service.reasoning;
 
 import com.example.agent.model.ConversationContext;
 import com.example.agent.model.Task;
-import com.example.agent.service.CompletionService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class Refinement {
-    private final CompletionService completionService;
+    private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
 
-    public Refinement(CompletionService completionService, ObjectMapper objectMapper) {
-        this.completionService = completionService;
+    public Refinement(ChatClient chatClient, ObjectMapper objectMapper) {
+        this.chatClient = chatClient;
         this.objectMapper = objectMapper;
     }
 
@@ -27,7 +27,12 @@ public class Refinement {
 
         // If this is a follow-up response, include previous context
         String prompt = buildPrompt(query, currentContext != null ? currentContext : ConversationContext.createNew());
-        String response = completionService.getCompletion(prompt);
+        String response = chatClient
+            .prompt()
+            .system("You are a task refinement assistant. Analyze the task and help make it well-defined.")
+            .user(prompt)
+            .call()
+            .content();
         
         return processAIResponse(response, currentContext != null ? currentContext : ConversationContext.createNew());
     }

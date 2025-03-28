@@ -125,10 +125,15 @@ graph TD
     Controller -->|QueryRequest| AIService[AIService]
     
     subgraph "AI Processing"
-        AIService -->|Input| DecisionMaker[Decision Making Layer]
-        DecisionMaker -->|Intent| ReasoningEngine[Reasoning Engine]
-        ReasoningEngine -->|Context| KnowledgeBase[Knowledge Base]
+        AIService -->|Input| DecisionMaker[OpenAI Decision Maker]
+        DecisionMaker -->|LLM Query| OpenAI[(OpenAI API)]
+        OpenAI -->|Intent Classification| DecisionMaker
         
+        DecisionMaker -->|Intent| ReasoningEngine[Reasoning Engine]
+        ReasoningEngine -->|LLM Query| OpenAI
+        OpenAI -->|Refinement Result| ReasoningEngine
+        
+        ReasoningEngine -->|Context| KnowledgeBase[Knowledge Base]
         SensorSystem[Sensor System] -->|Environment Data| KnowledgeBase
         KnowledgeBase -->|State| ReasoningEngine
         
@@ -146,15 +151,7 @@ graph TD
     DirectResponse -->|Follow-up Query| Controller
     TaskService -->|Response| Controller
     Controller -->|QueryResponse| Client
-```
 
-### Component Descriptions
-- **Controller Layer**: Handles HTTP requests and response formatting
-- **AI Processing**:
-  - Decision Making: Analyzes user intent using OpenAI
-  - Reasoning Engine: Implements advanced reasoning with early exit for incomplete information
-  - Knowledge Base: Maintains system state and context
-  - Sensor System: Gathers environmental data
-- **Task Management**:
-  - Task Processor: Executes determined actions
-  - Task Service: Handles business logic
+    classDef llm fill:#f9f,stroke:#333,stroke-width:2px;
+    class OpenAI llm;
+```
