@@ -69,3 +69,44 @@ Content-Type: application/json
   - `reasoning/` - Chain of thought implementation
   - `sensor/` - Environment data collection
   - `task/` - Task action implementations
+
+## System Architecture
+The following diagram illustrates the flow of data and control through the system's components:
+
+```mermaid
+graph TD
+    Client[Client Request] -->|HTTP| Controller[AgentController]
+    Controller -->|QueryRequest| AIService[AIService]
+    
+    subgraph "AI Processing"
+        AIService -->|Input| DecisionMaker[Decision Making Layer]
+        DecisionMaker -->|Intent| ReasoningEngine[Reasoning Engine]
+        ReasoningEngine -->|Context| KnowledgeBase[Knowledge Base]
+        
+        SensorSystem[Sensor System] -->|Environment Data| KnowledgeBase
+        KnowledgeBase -->|State| ReasoningEngine
+        
+        ReasoningEngine -->|Action Selection| TaskProcessor[Task Processor]
+    end
+    
+    subgraph "Task Management"
+        TaskProcessor -->|Execute| TaskService[TaskService]
+        TaskService -->|CRUD Operations| Repository[(TaskRepository)]
+        Repository -->|Data| Database[(PostgreSQL)]
+    end
+    
+    TaskService -->|Result| CompletionService[CompletionService]
+    CompletionService -->|Response| Controller
+    Controller -->|QueryResponse| Client
+```
+
+### Component Descriptions
+- **Controller Layer**: Handles HTTP requests and response formatting
+- **AI Processing**:
+  - Decision Making: Analyzes user intent using OpenAI
+  - Reasoning Engine: Implements chain-of-thought processing
+  - Knowledge Base: Maintains system state and context
+  - Sensor System: Gathers environmental data
+- **Task Management**:
+  - Task Processor: Executes determined actions
+  - Task Service: Handles business logic
