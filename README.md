@@ -35,9 +35,8 @@ The system implements several sophisticated AI agent patterns:
 
 1. **📝 Tasks Pattern**: Discrete units of work with specific responsibilities
 2. **🗄️ Knowledge Pattern**: System memory and information storage
-3. **📡 Sensor Pattern**: Environmental data gathering for context
-4. **🤔 Decision Making**: Intelligent action selection based on context
-5. **🔄 Refinement Pattern**: Iterative improvement through conversation
+3. **🤔 Decision Making**: Intelligent action selection based on context
+4. **🔄 Refinement Pattern**: Iterative improvement through conversation
 
 ## 🚀 Getting Started
 

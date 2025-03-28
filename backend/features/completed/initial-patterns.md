@@ -32,7 +32,6 @@ Implemented the foundational patterns for the AI agent architecture, focusing on
 
 ### 3. Interface Definitions
 Created interfaces for future patterns:
-- `Sensor` for environment data collection
 - `KnowledgeBase` for state management
 - `Refinement` for iterative improvements
 
@@ -82,5 +81,4 @@ public record Task(
 ## Future Enhancements
 The groundwork is laid for:
 - Implementing the Refinement pattern
-- Adding sensor capabilities
 - Implementing knowledge persistence

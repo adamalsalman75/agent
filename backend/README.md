@@ -113,8 +113,17 @@ Response:
   - `decision/` - Intent classification and decision making
   - `knowledge/` - State and context management
   - `reasoning/` - Advanced reasoning capabilities
-  - `sensor/` - Environment data collection
   - `task/` - Task action implementations
+
+### Component Descriptions
+- **Controller Layer**: Handles HTTP requests and response formatting
+- **AI Processing**:
+  - Decision Making: Analyzes user intent using OpenAI
+  - Reasoning Engine: Implements advanced reasoning with early exit for incomplete information
+  - Knowledge Base: Maintains system state and context
+- **Task Management**:
+  - Task Processor: Executes determined actions
+  - Task Service: Handles business logic
 
 ## System Architecture
 The following diagram illustrates the flow of data and control through the system's components:
@@ -134,7 +143,6 @@ graph TD
         OpenAI -->|Refinement Result| ReasoningEngine
         
         ReasoningEngine -->|Context| KnowledgeBase[Knowledge Base]
-        SensorSystem[Sensor System] -->|Environment Data| KnowledgeBase
         KnowledgeBase -->|State| ReasoningEngine
         
         ReasoningEngine -->|Action Selection| Decision{Needs More Info?}
