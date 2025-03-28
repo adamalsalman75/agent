@@ -8,7 +8,6 @@
 # Backend
 backend/target/
 backend/HELP.md
-backend/.mvn/
 *.class
 *.jar
 *.war
