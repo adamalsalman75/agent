@@ -34,7 +34,6 @@ Implemented the foundational patterns for the AI agent architecture, focusing on
 Created interfaces for future patterns:
 - `Sensor` for environment data collection
 - `KnowledgeBase` for state management
-- `ChainOfThought` for reasoning steps
 - `Refinement` for iterative improvements
 
 ## Technical Implementation
@@ -85,4 +84,3 @@ The groundwork is laid for:
 - Implementing the Refinement pattern
 - Adding sensor capabilities
 - Implementing knowledge persistence
-- Adding chain of thought reasoning

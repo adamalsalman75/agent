@@ -112,7 +112,7 @@ Response:
 - `service/` - Business logic and AI integration
   - `decision/` - Intent classification and decision making
   - `knowledge/` - State and context management
-  - `reasoning/` - Chain of thought implementation
+  - `reasoning/` - Advanced reasoning capabilities
   - `sensor/` - Environment data collection
   - `task/` - Task action implementations
 
@@ -144,8 +144,7 @@ graph TD
     end
     
     DirectResponse -->|Follow-up Query| Controller
-    TaskService -->|Result| CompletionService[CompletionService]
-    CompletionService -->|Response| Controller
+    TaskService -->|Response| Controller
     Controller -->|QueryResponse| Client
 ```
 
@@ -153,7 +152,7 @@ graph TD
 - **Controller Layer**: Handles HTTP requests and response formatting
 - **AI Processing**:
   - Decision Making: Analyzes user intent using OpenAI
-  - Reasoning Engine: Implements chain-of-thought processing with early exit for incomplete information
+  - Reasoning Engine: Implements advanced reasoning with early exit for incomplete information
   - Knowledge Base: Maintains system state and context
   - Sensor System: Gathers environmental data
 - **Task Management**:
