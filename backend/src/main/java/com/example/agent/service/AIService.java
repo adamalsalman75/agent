@@ -22,13 +22,11 @@ public class AIService {
     private final TaskRepository taskRepository;
     private final Refinement refinement;
     private final ObjectMapper objectMapper;
-    private final CompletionService completionService;
 
-    public AIService(TaskRepository taskRepository, Refinement refinement, ObjectMapper objectMapper, CompletionService completionService) {
+    public AIService(TaskRepository taskRepository, Refinement refinement, ObjectMapper objectMapper) {
         this.taskRepository = taskRepository;
         this.refinement = refinement;
         this.objectMapper = objectMapper;
-        this.completionService = completionService;
     }
 
     public QueryResponse processQuery(QueryRequest request) {

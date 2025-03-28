@@ -31,16 +31,13 @@ class AIServiceTest {
     @Mock
     private Refinement refinement;
 
-    @Mock
-    private CompletionService completionService;
-
     private AIService aiService;
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        aiService = new AIService(taskRepository, refinement, objectMapper, completionService);
+        aiService = new AIService(taskRepository, refinement, objectMapper);
     }
 
     @Test
