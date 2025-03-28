@@ -1,57 +1,24 @@
-# React + TypeScript + Vite
+# Task Manager Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React-based frontend for the AI Task Management system, built with TypeScript, Vite, and Material-UI.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
+- Node.js
+- npm/yarn
+- Backend server running (see backend README)
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Installation
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Development
+```bash
+npm run dev
 ```
+This will start the development server at http://localhost:5173
 
 ## Frontend Architecture
 
@@ -76,11 +43,11 @@ graph TD
     end
 
     subgraph "API Integration"
-        TaskForm -->|POST| ProcessQuery[/api/query]
-        UpdateForm -->|POST| ProcessQuery
-        TaskList -->|GET| RootTasks[/api/tasks/root]
-        TaskItem -->|GET| Subtasks[/api/tasks/{id}/subtasks]
-        TaskItem -->|PUT| CompleteTask[/api/tasks/{id}/complete]
+        TaskForm -->|POST| Query[api/query]
+        UpdateForm -->|POST| Query
+        TaskList -->|GET| TasksAPI[api/tasks/root]
+        TaskItem -->|GET| SubtasksAPI[api/tasks/:id/subtasks]
+        TaskItem -->|PUT| CompleteAPI[api/tasks/:id/complete]
     end
 
     subgraph "User Interactions"
@@ -88,13 +55,13 @@ graph TD
         User -->|Complete Task| TaskItem
         User -->|Update Task| Dialog
         User -->|Expand/Collapse| TaskItem
-        ProcessQuery -->|Refinement Loop| User
+        Query -->|Refinement Loop| User
     end
 
-    ProcessQuery -->|Success| RQ
-    RootTasks -->|Cache| RQ
-    Subtasks -->|Cache| RQ
-    CompleteTask -->|Invalidate| RQ
+    Query -->|Success| RQ
+    TasksAPI -->|Cache| RQ
+    SubtasksAPI -->|Cache| RQ
+    CompleteAPI -->|Invalidate| RQ
 ```
 
 ### Component Descriptions
@@ -149,5 +116,3 @@ This will run all tests in headless mode and show the results in the terminal.
   - Task creation and updates
   - Task completion
   - Task refinement conversation
-
-## Development Setup
