@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude test classes -->
+    <Match>
+        <Class name="~.*\.*Test" />
+    </Match>
+
+    <!-- Exclude test source files -->
+    <Match>
+        <Class name="~.*\.*Test\$.*" />
+    </Match>
+
+    <!-- Exclude model classes from certain checks -->
+    <Match>
+        <Class name="~com\.example\.agent\.model\.*" />
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
+    </Match>
+
+    <!-- Exclude Spring configuration classes -->
+    <Match>
+        <Class name="~com\.example\.agent\.config\.*" />
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION,THROWS_METHOD_THROWS_RUNTIMEEXCEPTION" />
+    </Match>
+
+    <!-- Exclude false positives in Spring Boot application class -->
+    <Match>
+        <Class name="com.example.agent.AIAgentApplication" />
+        <Bug pattern="DM_EXIT" />
+    </Match>
+</FindBugsFilter>
