@@ -97,4 +97,42 @@ public record Task(
             newMetadata
         );
     }
+
+    public Task update(String description, LocalDateTime deadline, String priority, String constraints) {
+        return new Task(
+            this.id,
+            description != null ? description : this.description,
+            this.completed,
+            this.createdAt,
+            this.completedAt,
+            deadline != null ? deadline : this.deadline,
+            priority != null ? priority : this.priority,
+            constraints != null ? constraints : this.constraints,
+            this.parentId,
+            this.metadata
+        );
+    }
+
+    public Task updateFromContext(JsonNode data) {
+        return new Task(
+            this.id,
+            data.has("description") ? data.get("description").asText() : this.description,
+            this.completed,
+            this.createdAt,
+            this.completedAt,
+            data.has("deadline") ? parseDateTime(data.get("deadline").asText()) : this.deadline,
+            data.has("priority") ? data.get("priority").asText() : this.priority,
+            data.has("constraints") ? data.get("constraints").asText() : this.constraints,
+            data.has("parentId") ? data.get("parentId").asLong() : this.parentId,
+            data.has("metadata") ? data.get("metadata") : this.metadata
+        );
+    }
+
+    private static LocalDateTime parseDateTime(String dateStr) {
+        try {
+            return LocalDateTime.parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

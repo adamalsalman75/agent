@@ -40,6 +40,18 @@ public class AIService {
             );
         }
 
+        // Check if this is an update to an existing task
+        if (context.inProgressTask() != null) {
+            Task updatedTask = updateTaskFromContext(context.inProgressTask(), context);
+            if (updatedTask != null) {
+                return QueryResponse.withTask(
+                    "Successfully updated task: " + updatedTask.description(),
+                    updatedTask
+                );
+            }
+        }
+
+        // If not an update, create new task
         Task task = createTaskFromContext(context);
         if (task != null) {
             task = taskRepository.save(task);
@@ -49,7 +61,7 @@ public class AIService {
             );
         }
 
-        return QueryResponse.success("I couldn't create a task from that input. Could you try rephrasing?");
+        return QueryResponse.success("I couldn't process that input. Could you try rephrasing?");
     }
 
     private Task createTaskFromContext(ConversationContext context) {
@@ -88,6 +100,15 @@ public class AIService {
             }
 
             return task;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Task updateTaskFromContext(Task existingTask, ConversationContext context) {
+        try {
+            JsonNode data = context.collectedData();
+            return taskRepository.save(existingTask.updateFromContext(data));
         } catch (Exception e) {
             return null;
         }

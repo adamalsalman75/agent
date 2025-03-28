@@ -50,4 +50,18 @@ public class TaskService {
     public List<Task> getOverdueTasks() {
         return taskRepository.findOverdueTasks();
     }
+
+    public Task updateTask(Long id, Task updatedTask) {
+        return taskRepository.findById(id)
+            .map(existingTask -> {
+                Task newTask = existingTask.update(
+                    updatedTask.description(),
+                    updatedTask.deadline(),
+                    updatedTask.priority(),
+                    updatedTask.constraints()
+                );
+                return taskRepository.save(newTask);
+            })
+            .orElseThrow(() -> new RuntimeException("Task not found"));
+    }
 }

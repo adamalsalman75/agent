@@ -68,4 +68,14 @@ public class AgentController {
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         return ResponseEntity.ok(taskRepository.save(task));
     }
+
+    @PutMapping("/tasks/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
+        return ResponseEntity.ok(taskRepository.save(task.update(
+            task.description(),
+            task.deadline(),
+            task.priority(),
+            task.constraints()
+        )));
+    }
 }
