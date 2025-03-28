@@ -1,0 +1,73 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/maven.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/maven.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Cache Maven packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('backend/**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Build and test with coverage
+      run: cd backend && ./mvnw clean verify
+
+    - name: Create badges directory
+      run: mkdir -p badges/backend
+      
+    - name: Generate JaCoCo Badge
+      id: jacoco
+      uses: cicirello/jacoco-badge-generator@v2.11.0
+      with:
+        generate-branches-badge: true
+        jacoco-csv-file: backend/target/site/jacoco/jacoco.csv
+        badges-directory: badges/backend
+
+    - name: Upload coverage badges
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-coverage-badges
+        path: badges/backend/*.svg
+        if-no-files-found: error
+        retention-days: 90
+        
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-coverage-report
+        path: backend/target/site/jacoco/
+        if-no-files-found: error
+    
+    - name: Upload SpotBugs report
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-spotbugs-report
+        path: backend/target/site/spotbugs.html

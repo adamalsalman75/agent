@@ -1,4 +1,7 @@
 # AI Task Assistant Backend
+[![Backend CI/CD](https://github.com/$GITHUB_USERNAME/agent/actions/workflows/maven.yml/badge.svg)](https://github.com/$GITHUB_USERNAME/agent/actions/workflows/maven.yml)
+[![Coverage](../../badges/backend/jacoco.svg)](../../backend/target/site/jacoco/)
+[![Branches](../../badges/backend/branches.svg)](../../backend/target/site/jacoco/)
 
 Spring Boot backend implementing an AI agent for natural language task management.
 
