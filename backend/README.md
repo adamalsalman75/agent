@@ -1,7 +1,7 @@
 # AI Task Assistant Backend
 [![Backend CI/CD](https://github.com/adamalsalman75/agent/actions/workflows/maven.yml/badge.svg)](https://github.com/adamalsalman75/agent/actions/workflows/maven.yml)
-[![Backend Coverage](https://github.com/adamalsalman75/agent/blob/gh-pages/badges/backend/jacoco.svg)](https://github.com/adamalsalman75/agent/actions/workflows/maven.yml)
-[![Backend Branches](https://github.com/adamalsalman75/agent/blob/gh-pages/badges/backend/branches.svg)](https://github.com/adamalsalman75/agent/actions/workflows/maven.yml)
+[![Backend Coverage](https://github.com/adamalsalman75/agent/blob/gh-pages/backend/branches.svg)](https://github.com/adamalsalman75/agent/actions/workflows/maven.yml)
+[![Backend Branches](https://github.com/adamalsalman75/agent/blob/gh-pages/backend/branches.svg)](https://github.com/adamalsalman75/agent/actions/workflows/maven.yml)
 
 Spring Boot backend implementing an AI agent for natural language task management.
 
