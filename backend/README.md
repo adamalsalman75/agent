@@ -100,7 +100,7 @@ Response:
 
 ### Key Components
 - Task Actions: CreateTaskAction, CompleteTaskAction, ListTasksAction
-- Decision Making: OpenAIDecisionMaker for intent classification
+- Decision Making: Language model based intent classification
 - Data Model: Immutable Task records with Spring Data JDBC
 - Configuration: Environment-based settings and CORS setup
 
@@ -118,7 +118,7 @@ Response:
 ### Component Descriptions
 - **Controller Layer**: Handles HTTP requests and response formatting
 - **AI Processing**:
-  - Decision Making: Analyzes user intent using OpenAI
+  - Decision Making: Analyzes user intent using language models
   - Reasoning Engine: Implements advanced reasoning with early exit for incomplete information
   - Knowledge Base: Maintains system state and context
 - **Task Management**:
@@ -134,8 +134,8 @@ graph TD
     Controller -->|QueryRequest| AIService[AIService]
     
     subgraph "AI Processing"
-        AIService -->|Input| DecisionMaker[OpenAI Decision Maker]
-        DecisionMaker -->|LLM Query| OpenAI[(OpenAI API)]
+        AIService -->|Input| DecisionMaker[Decision Maker]
+        DecisionMaker -->|LLM Query| OpenAI[(LLM API)]
         OpenAI -->|Intent Classification| DecisionMaker
         
         DecisionMaker -->|Intent| ReasoningEngine[Reasoning Engine]

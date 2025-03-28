@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 
@@ -20,7 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
-class OpenAIDecisionMakerTest {
+class DecisionMakerTest {
 
     @Mock
     private ChatClient chatClient;
@@ -37,7 +36,7 @@ class OpenAIDecisionMakerTest {
     @Mock
     private TaskAction completeTaskAction;
 
-    private OpenAIDecisionMaker decisionMaker;
+    private DecisionMaker decisionMaker;
 
     @BeforeEach
     void setUp() {
@@ -55,7 +54,7 @@ class OpenAIDecisionMakerTest {
         lenient().when(requestSpec.user(anyString())).thenReturn(requestSpec);
         lenient().when(requestSpec.call()).thenReturn(responseSpec);
         
-        decisionMaker = new OpenAIDecisionMaker(
+        decisionMaker = new DecisionMaker(
             chatClient,
             List.of(createTaskAction, completeTaskAction)
         );
