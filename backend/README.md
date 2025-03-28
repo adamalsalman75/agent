@@ -40,14 +40,57 @@ POST /api/query
 Content-Type: application/json
 
 {
-  "query": "Add a new task to buy groceries"
+  "query": "Add a new task to buy groceries",
+  "context": {} // Optional context for updates or follow-ups
+}
+
+Response:
+{
+  "response": "Task created successfully: Buy groceries",
+  "requiresFollowUp": false,
+  "context": null,
+  "resultTask": {
+    "id": 1,
+    "description": "Buy groceries",
+    "completed": false,
+    // ...other task fields
+  }
 }
 ```
 
-### Direct Task Management
+### Task Management API
+
+#### List Tasks
 - `GET /api/tasks` - List all tasks
-- `GET /api/tasks/active` - List active (incomplete) tasks
+- `GET /api/tasks/active` - List only incomplete tasks
+- `GET /api/tasks/root` - List top-level tasks (no parent)
+- `GET /api/tasks/{id}/subtasks` - List subtasks of a specific task
+- `GET /api/tasks/priority/{priority}` - List tasks by priority
+- `GET /api/tasks/overdue` - List overdue incomplete tasks
+
+#### Create and Update Tasks
 - `POST /api/tasks` - Create a new task
+  ```json
+  {
+    "description": "Task description",
+    "deadline": "2025-04-01T10:00:00",
+    "priority": "HIGH",
+    "constraints": "Must be completed before the meeting",
+    "parentId": null,
+    "metadata": {}
+  }
+  ```
+
+- `PUT /api/tasks/{id}` - Update an existing task
+  ```json
+  {
+    "description": "Updated description",
+    "deadline": "2025-04-01T10:00:00",
+    "priority": "HIGH",
+    "constraints": "Updated constraints"
+  }
+  ```
+
 - `PUT /api/tasks/{id}/complete` - Mark a task as complete
 
 ## Implementation Details
