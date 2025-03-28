@@ -12,4 +12,20 @@ public record ConversationContext(
     public static ConversationContext createNew() {
         return new ConversationContext(null, null, false, null, null);
     }
+
+    public String getCurrentIntent() {
+        return currentIntent;
+    }
+
+    public JsonNode getCollectedData() {
+        return collectedData;
+    }
+
+    public String getNextPrompt() {
+        return nextPrompt;
+    }
+
+    public Task getInProgressTask() {
+        return inProgressTask;
+    }
 }

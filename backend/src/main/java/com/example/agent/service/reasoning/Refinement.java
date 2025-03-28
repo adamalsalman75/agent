@@ -84,13 +84,24 @@ public class Refinement {
             );
         }
         
-        // Process completed task information
+        // For new tasks, set the intent to CREATE_TASK
+        if (context.currentIntent() == null) {
+            return new ConversationContext(
+                "CREATE_TASK",
+                parseTaskData(content),
+                false,
+                null,
+                null
+            );
+        }
+        
+        // Otherwise, maintain the existing intent
         return new ConversationContext(
-            "TASK_COMPLETE",
+            context.currentIntent(),
             parseTaskData(content),
             false,
             null,
-            null
+            context.inProgressTask()
         );
     }
 
