@@ -163,3 +163,41 @@ graph TD
     classDef llm fill:#f9f,stroke:#333,stroke-width:2px;
     class OpenAI llm;
 ```
+
+### Decision Maker Architecture
+The following diagram shows how the Decision Maker and Refinement components are integrated:
+
+```mermaid
+flowchart TD
+    Input["User Query"] --> QueryCheck{"Query Present?"}
+    QueryCheck -->|No| EmptyResult["Return Empty"]
+    QueryCheck -->|Yes| InitialLLM["Initial Intent Classification"]
+    
+    InitialLLM --> OpenAI1[("LLM API")]
+    OpenAI1 --> Refinement["Refinement Check"]
+    
+    Refinement --> NeedsInfo{"Needs More Info?"}
+    NeedsInfo -->|Yes| FollowUp["Return Follow-up Question"]
+    NeedsInfo -->|No| ActionMatch["Match Action"]
+    
+    ActionMatch -->|Available Action| Decision["Create ActionDecision"]
+    ActionMatch -->|No Match| EmptyResult
+    
+    Decision --> TaskCreation["Create/Update Task"]
+    
+    subgraph "Refinement Process"
+        Refinement --> OpenAI2[("LLM API")]
+        OpenAI2 --> DetailExtraction["Extract Details"]
+        DetailExtraction --> Validation["Validate Details"]
+    end
+    
+    classDef llm fill:#f9f,stroke:#333,stroke-width:2px
+    class OpenAI1,OpenAI2 llm
+```
+
+Key architectural aspects:
+1. Refinement occurs before task creation
+2. Intent classification is integrated with refinement
+3. Tasks are only created when all required information is available
+4. Conversation context is maintained throughout the process
+5. Single source of truth for task state
