@@ -17,8 +17,9 @@ import java.util.Optional;
 @Component
 public class DecisionMaker {
     private static final Logger logger = LoggerFactory.getLogger(DecisionMaker.class);
+    
     // Record to represent the intent classification response
-    private record IntentClassification(String intent) {}
+    protected record IntentClassification(String intent) {}
     
     private final ChatClient chatClient;
     private final List<TaskAction> availableActions;
@@ -76,7 +77,7 @@ public class DecisionMaker {
         logger.info("Exiting decide with actionDecision: {}", actionDecision);
         return actionDecision;
     }
-    
+
     private IntentClassification classifyIntent(String query) {
         return chatClient
                 .prompt()
@@ -93,7 +94,7 @@ public class DecisionMaker {
                 .call()
                 .entity(IntentClassification.class);
     }
-    
+
     private TaskParameters buildParameters(String intent, TaskData taskData) {
         if (taskData == null) {
             return null;

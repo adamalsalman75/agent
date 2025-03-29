@@ -12,7 +12,7 @@ public class Refinement {
     private static final Logger logger = LoggerFactory.getLogger(Refinement.class);
 
     // Record to define the structure expected from the LLM
-    private record TaskRefinementResponse(
+    record TaskRefinementResponse(
         String description,
         String deadline,
         String priority,

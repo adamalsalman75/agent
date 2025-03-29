@@ -40,11 +40,11 @@ public class CreateTaskAction implements TaskAction {
             task = taskService.createTask(task);
             logger.info("Task created successfully with ID: {}", task.id());
             
-            // Return new parameters with the task ID
+            // Return new parameters with the task ID if available
             return TaskParameters.forCreateTask(
-                task.id().toString(),
+                task.id() != null ? task.id().toString() : null,
                 task.description(),
-                task.deadline() != null ? task.deadline().toString() : null,
+                task.deadline() != null ? task.deadline().format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null,
                 task.priority(),
                 task.constraints()
             );
@@ -58,7 +58,6 @@ public class CreateTaskAction implements TaskAction {
 
     @Override
     public boolean canHandle(String intent) {
-        logger.debug("Checking if intent can be handled: {}", intent);
-        return "CREATE_TASK".equalsIgnoreCase(intent);
+        return "CREATE_TASK".equals(intent);
     }
 }
