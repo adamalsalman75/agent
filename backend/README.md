@@ -111,19 +111,17 @@ Response:
 - `repository/` - Data access layer
 - `service/` - Business logic and AI integration
   - `decision/` - Intent classification and decision making
-  - `knowledge/` - State and context management
-  - `reasoning/` - Advanced reasoning capabilities
   - `task/` - Task action implementations
 
 ### Component Descriptions
 - **Controller Layer**: Handles HTTP requests and response formatting
 - **AI Processing**:
   - Decision Making: Analyzes user intent using language models
-  - Reasoning Engine: Implements advanced reasoning with early exit for incomplete information
-  - Knowledge Base: Maintains system state and context
+  - Refinement: Handles multi-turn conversations and parameter extraction
+  - Context Management: Maintains conversation state between interactions
 - **Task Management**:
-  - Task Processor: Executes determined actions
-  - Task Service: Handles business logic
+  - Task Actions: Executes specific task operations (create, complete, list)
+  - Task Repository: Handles data persistence
 
 ## Architecture Documentation
 

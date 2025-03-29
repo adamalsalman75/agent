@@ -42,13 +42,13 @@ private record IntentClassification(String intent) {}
 ### 3. Task Management
 
 #### TaskParameters
-- Current implementation is mutable
+- Implemented as an immutable record
 - Supports:
   - Description
   - Deadline
   - Priority
   - Constraints
-  - Parent ID
+  - Task ID
 
 #### ActionDecision
 - Record type with:
@@ -62,42 +62,42 @@ private record IntentClassification(String intent) {}
 ```mermaid
 graph TD
     Query[User Query] --> Decision[DecisionMaker]
-    
+
     subgraph "AI Component"
         Decision --> Intent[Intent Classification]
         Intent -- "query + previousData" --> Refinement[Refinement]
         Refinement -- "prompt" --> LLM[ChatClient]
         LLM -- "TaskRefinementResponse" --> Refinement
-        
+
         Refinement --> CollectData[Build ConversationContext]
         CollectData --> Complete{Requires FollowUp?}
-        
+
         Complete -->|Yes| FollowUp[Generate Follow-up]
         Complete -->|No| BuildParams[Build TaskParameters]
-        
+
         BuildParams --> Action[Find Matching Action]
         Action --> ActionDecision[Create ActionDecision]
         FollowUp --> ActionDecision
     end
-    
+
     subgraph "Task Component"
         CreateAction[CreateTaskAction]
         CompleteAction[CompleteTaskAction] 
         ListAction[ListTasksAction]
         TaskService[TaskService]
         Repository[TaskRepository]
-        
+
         CreateAction --> TaskService
         CompleteAction --> TaskService
         ListAction --> TaskService
         TaskService --> Repository
     end
-    
+
     ActionDecision -->|RequireInfoAction| NextQuery[Wait for User Input]
     ActionDecision -->|CreateTaskAction| CreateAction
     ActionDecision -->|CompleteTaskAction| CompleteAction
     ActionDecision -->|ListTasksAction| ListAction
-    
+
     Repository -->|Return Task| Response[Response to User]
     NextQuery --> Query
 ```
@@ -128,7 +128,6 @@ Current test cases focus on:
 4. Error handling
 
 ## Planned Enhancements
-(From refinement-pattern.md)
 1. Enhanced task metadata
 2. Subtask relationships
 3. Improved conversation handling
