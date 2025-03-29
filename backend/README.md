@@ -105,13 +105,17 @@ Response:
 - Configuration: Environment-based settings and CORS setup
 
 ### Code Organization
+- `ai/` - AI-related components
+  - `controller/` - REST API endpoints for AI interactions
+  - `model/` - AI-related data models
+  - `service/` - AI service implementation
+    - `decision/` - Intent classification and decision making
+- `common/` - Shared utilities and common components
 - `config/` - Spring configuration including AI and database setup
-- `controller/` - REST API endpoints
-- `model/` - Data models and domain objects
-- `repository/` - Data access layer
-- `service/` - Business logic and AI integration
-  - `decision/` - Intent classification and decision making
-  - `task/` - Task action implementations
+- `task/` - Task management components
+  - `repository/` - Task data access layer
+  - `service/` - Task business logic
+    - `action/` - Task action implementations
 
 ### Component Descriptions
 - **Controller Layer**: Handles HTTP requests and response formatting
