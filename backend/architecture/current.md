@@ -62,35 +62,44 @@ private record IntentClassification(String intent) {}
 ```mermaid
 graph TD
     Query[User Query] --> Decision[DecisionMaker]
-    Decision --> Intent[Intent Classification]
-    Intent -- "query + previousData" --> Refinement[Refinement]
-    Refinement -- "prompt" --> LLM[ChatClient]
-    LLM -- "TaskRefinementResponse" --> Refinement
     
-    Refinement --> CollectData[Build ConversationContext]
-    CollectData --> Complete{Requires FollowUp?}
-    
-    Complete -->|Yes| FollowUp[Generate Follow-up]
-    Complete -->|No| BuildParams[Build TaskParameters]
-    
-    BuildParams --> Action[Find Matching Action]
-    Action --> ActionDecision[Create ActionDecision]
-    
-    FollowUp --> ActionDecision
-    ActionDecision --> NextQuery[Wait for User Input]
-    
-    subgraph "Refinement Process"
-        Refinement
-        LLM
-        CollectData
-        Complete
+    subgraph "AI Component"
+        Decision --> Intent[Intent Classification]
+        Intent -- "query + previousData" --> Refinement[Refinement]
+        Refinement -- "prompt" --> LLM[ChatClient]
+        LLM -- "TaskRefinementResponse" --> Refinement
+        
+        Refinement --> CollectData[Build ConversationContext]
+        CollectData --> Complete{Requires FollowUp?}
+        
+        Complete -->|Yes| FollowUp[Generate Follow-up]
+        Complete -->|No| BuildParams[Build TaskParameters]
+        
+        BuildParams --> Action[Find Matching Action]
+        Action --> ActionDecision[Create ActionDecision]
+        FollowUp --> ActionDecision
     end
     
-    subgraph "Decision Process"
-        Intent
-        BuildParams
-        Action
+    subgraph "Task Component"
+        CreateAction[CreateTaskAction]
+        CompleteAction[CompleteTaskAction] 
+        ListAction[ListTasksAction]
+        TaskService[TaskService]
+        Repository[TaskRepository]
+        
+        CreateAction --> TaskService
+        CompleteAction --> TaskService
+        ListAction --> TaskService
+        TaskService --> Repository
     end
+    
+    ActionDecision -->|RequireInfoAction| NextQuery[Wait for User Input]
+    ActionDecision -->|CreateTaskAction| CreateAction
+    ActionDecision -->|CompleteTaskAction| CompleteAction
+    ActionDecision -->|ListTasksAction| ListAction
+    
+    Repository -->|Return Task| Response[Response to User]
+    NextQuery --> Query
 ```
 
 ## Current State of Refinement Pattern

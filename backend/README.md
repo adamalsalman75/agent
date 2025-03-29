@@ -125,79 +125,12 @@ Response:
   - Task Processor: Executes determined actions
   - Task Service: Handles business logic
 
-## System Architecture
-The following diagram illustrates the flow of data and control through the system's components:
+## Architecture Documentation
 
-```mermaid
-graph TD
-    Client[Client Request] -->|HTTP| Controller[AgentController]
-    Controller -->|QueryRequest| AIService[AIService]
-    
-    subgraph "AI Processing"
-        AIService -->|Input| DecisionMaker[Decision Maker]
-        DecisionMaker -->|LLM Query| OpenAI[(LLM API)]
-        OpenAI -->|Intent Classification| DecisionMaker
-        
-        DecisionMaker -->|Intent| ReasoningEngine[Reasoning Engine]
-        ReasoningEngine -->|LLM Query| OpenAI
-        OpenAI -->|Refinement Result| ReasoningEngine
-        
-        ReasoningEngine -->|Context| KnowledgeBase[Knowledge Base]
-        KnowledgeBase -->|State| ReasoningEngine
-        
-        ReasoningEngine -->|Action Selection| Decision{Needs More Info?}
-        Decision -->|Yes| DirectResponse[Direct Response]
-        Decision -->|No| TaskProcessor[Task Processor]
-    end
-    
-    subgraph "Task Management"
-        TaskProcessor -->|Execute| TaskService[TaskService]
-        TaskService -->|CRUD Operations| Repository[(TaskRepository)]
-        Repository -->|Data| Database[(PostgreSQL)]
-    end
-    
-    DirectResponse -->|Follow-up Query| Controller
-    TaskService -->|Response| Controller
-    Controller -->|QueryResponse| Client
+For detailed architecture diagrams and component behaviors, please refer to the [Current Architecture Documentation](architecture/current.md). This document includes:
 
-    classDef llm fill:#f9f,stroke:#333,stroke-width:2px;
-    class OpenAI llm;
-```
-
-### Decision Maker Architecture
-The following diagram shows how the Decision Maker and Refinement components are integrated:
-
-```mermaid
-flowchart TD
-    Input["User Query"] --> QueryCheck{"Query Present?"}
-    QueryCheck -->|No| EmptyResult["Return Empty"]
-    QueryCheck -->|Yes| InitialLLM["Initial Intent Classification"]
-    
-    InitialLLM --> OpenAI1[("LLM API")]
-    OpenAI1 --> Refinement["Refinement Check"]
-    
-    Refinement --> NeedsInfo{"Needs More Info?"}
-    NeedsInfo -->|Yes| FollowUp["Return Follow-up Question"]
-    NeedsInfo -->|No| ActionMatch["Match Action"]
-    
-    ActionMatch -->|Available Action| Decision["Create ActionDecision"]
-    ActionMatch -->|No Match| EmptyResult
-    
-    Decision --> TaskCreation["Create/Update Task"]
-    
-    subgraph "Refinement Process"
-        Refinement --> OpenAI2[("LLM API")]
-        OpenAI2 --> DetailExtraction["Extract Details"]
-        DetailExtraction --> Validation["Validate Details"]
-    end
-    
-    classDef llm fill:#f9f,stroke:#333,stroke-width:2px
-    class OpenAI1,OpenAI2 llm
-```
-
-Key architectural aspects:
-1. Refinement occurs before task creation
-2. Intent classification is integrated with refinement
-3. Tasks are only created when all required information is available
-4. Conversation context is maintained throughout the process
-5. Single source of truth for task state
+- System flow diagrams
+- Decision maker architecture
+- Component interaction patterns
+- Current state of refinement implementation
+- AI component integration details
