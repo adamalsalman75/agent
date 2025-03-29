@@ -63,12 +63,34 @@ private record IntentClassification(String intent) {}
 graph TD
     Query[User Query] --> Decision[DecisionMaker]
     Decision --> Intent[Intent Classification]
-    Intent --> Refinement[Refinement Check]
-    Refinement --> Complete{Complete Info?}
-    Complete -->|Yes| Action[Create Action]
-    Complete -->|No| FollowUp[Generate Follow-up]
-    Action --> Execute[Execute Task Action]
-    FollowUp --> NextQuery[Wait for User Input]
+    Intent -- "query + previousData" --> Refinement[Refinement]
+    Refinement -- "prompt" --> LLM[ChatClient]
+    LLM -- "TaskRefinementResponse" --> Refinement
+    
+    Refinement --> CollectData[Build ConversationContext]
+    CollectData --> Complete{Requires FollowUp?}
+    
+    Complete -->|Yes| FollowUp[Generate Follow-up]
+    Complete -->|No| BuildParams[Build TaskParameters]
+    
+    BuildParams --> Action[Find Matching Action]
+    Action --> ActionDecision[Create ActionDecision]
+    
+    FollowUp --> ActionDecision
+    ActionDecision --> NextQuery[Wait for User Input]
+    
+    subgraph "Refinement Process"
+        Refinement
+        LLM
+        CollectData
+        Complete
+    end
+    
+    subgraph "Decision Process"
+        Intent
+        BuildParams
+        Action
+    end
 ```
 
 ## Current State of Refinement Pattern
@@ -103,3 +125,4 @@ Current test cases focus on:
 3. Improved conversation handling
 4. Better prompt engineering
 5. Async conversation support
+`
